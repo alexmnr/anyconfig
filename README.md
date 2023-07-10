@@ -1,0 +1,2 @@
+# anyconfig
+automatic dotfiles installer
