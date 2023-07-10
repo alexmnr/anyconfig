@@ -85,10 +85,12 @@ func Init() AnyConfig {
 
 func createConfig() (FileStruct, error) {
   // create directory
-  err, _, _ := command.Cmd("sudo mkdir /etc/anyconfig", false, false)
-  if err != nil {
-    out.Error("Could not create /etc/anyconfig")
-    os.Exit(1)
+  if tools.CheckExist("/etc/anyconfig") == false {
+    err, _, _ := command.Cmd("sudo mkdir /etc/anyconfig", false, false)
+    if err != nil {
+      out.Error("Could not create /etc/anyconfig")
+      os.Exit(1)
+    }
   }
   // get Info
   osType := tools.GetOS()

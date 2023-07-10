@@ -3,3 +3,7 @@ F*ck tediously bash scripting a install script for your dotfiles, that only work
 Just use anyconfig: A delightful, go based dotfiles installer, that configers your repository and helps you create yaml based install instructions for YOUR setup.
 
 Anyconfig lets you select from your tasks, and uses custom made, robust and cross plattform compatible functions to install necessary packages, manage dependencies, create directorys, link files and so much more…
+
+<img alt="preview" src="./preview/preview.gif" width="800" />
+
+### More Documentation is comming...

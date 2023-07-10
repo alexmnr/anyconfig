@@ -104,7 +104,8 @@ func (m file_picker_model) View() string {
 
 func FilePicker(message string, startDir string) string {
 	fp := filepicker.New()
-	fp.CurrentDirectory = startDir
+	fp.CurrentDirectory = "/opt/dotfiles"
+	// fp.CurrentDirectory = startDir
 	// fp.CurrentDirectory, _ = os.UserHomeDir()
 
 	m := file_picker_model{
