@@ -1,0 +1,38 @@
+dependencies:
+  task:
+    - yay 
+    - zsh/config 
+    - tmux/tmux 
+  noCommand:
+    - yay 
+  noDir:
+    - /usr/local/zsh/oh-my-zsh
+  user:
+    - noroot
+  os:
+    - arch or debian
+install:
+  cmd:
+    - ls {home}
+    - <NameOfCommand> | usermod {user}
+  env:
+    - ZSH = /usr/local/zsh/oh-my-zsh
+    - <NameOfCommand> | hsh = hhh
+  mkdir:
+    - "{home}/.old"
+    - <NameOfCommand> | "{home}/.old"
+  ln:
+    - Linking .zshrc | {repo}/config/.zshrc > {home}
+    - "{repo}/config/.rc-temp > {home}"
+  mv:
+    - "{repo}/config/.rc-temp > {home}"
+  cp:
+    - "{repo}/config/.rc-temp > {home}"
+  pkg:
+    - git
+  yay:
+    - git
+  apt:
+    - git
+  pacman:
+    - git
