@@ -57,8 +57,6 @@ func SelectFiles(repo string, config config.AnyConfig) []string {
       filename := ""
       for n, k := range fileNames_colored {
         if k == filename_colored {
-          fmt.Println(len(fileNames))
-          fmt.Println(len(fileNames_colored))
           filename = fileNames[n]
         }
       }
