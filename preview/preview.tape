@@ -68,21 +68,6 @@ Sleep 1s
 Right
 Sleep 500ms
 Enter
-#Space Sleep 200ms
-#Down 
-#Space Sleep 200ms
-#Down 
-#Space Sleep 200ms
-#Down 
-#Space Sleep 200ms
-#Down 
-#Space Sleep 200ms
-#Down 
-#Space Sleep 200ms
-#Down 
-#Space Sleep 200ms
-#Sleep 500ms
-#Enter
 
 Sleep 300ms
 Right

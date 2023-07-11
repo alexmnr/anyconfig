@@ -12,6 +12,7 @@ import (
 
 func PkgInstall(installer string, pkgs string, debug bool) error {
   string := installer + " " + pkgs
+  out.Error(string)
   err, output, error := Cmd(string, false, debug)
   if err != nil {
     out.CommandError(string, err, output, error)
