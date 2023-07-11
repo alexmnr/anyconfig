@@ -66,7 +66,7 @@ func Clone() string {
     PageSize: 10,
   }
   survey.AskOne(prompt, &input)
-  path := ui.FilePicker("Select Directory to clone into:", "/")
+  path := ui.TextInput("Select Directory to clone into:", "path")
   err, _, _ := command.Cmd("gh repo clone " + input + " " + path + "/" + input, false, true)
   if err != nil {
     out.Error(err)
