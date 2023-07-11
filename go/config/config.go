@@ -111,7 +111,8 @@ func createConfig() (FileStruct, error) {
   prompt := &survey.Select{
     Message: "No dotfiles Repository configured, what next?",
     Options: []string{
-      out.Style(3, false, "link") + " existing Repository", 
+      out.Style(3, false, "link manually") + " existing Repository", 
+      out.Style(3, false, "link interactivly") + " existing Repository", 
       out.Style(3, false, "create") + " new Repository (needs github authentication)", 
       out.Style(3, false, "clone") + " existing Repository (needs github authentication)",
       "exit",
@@ -121,7 +122,9 @@ func createConfig() (FileStruct, error) {
   survey.AskOne(prompt, &input)
   if input == "Exit" {
     os.Exit(0)
-  } else if input == out.Style(3, false, "link") + " existing Repository" {
+  } else if input == out.Style(3, false, "link manually") + " existing Repository" {
+    repo = ui.TextInput("Path of Repository", "Path")
+  } else if input == out.Style(3, false, "link interactivly") + " existing Repository" {
     repo = ui.FilePicker("Select Repository:", "/etc")
   } else if input == out.Style(3, false, "create") + " new Repository (needs github authentication)"{
     gh.Config()
@@ -130,6 +133,10 @@ func createConfig() (FileStruct, error) {
   } else if input == out.Style(3, false, "clone") + " existing Repository (needs github authentication)"{
     gh.Config()
     repo = gh.Clone()
+  } 
+  if repo == "" {
+    out.Error("Error configuring Repo")
+    os.Exit(1)
   }
 
   // check if repo is configured for anyconfig
