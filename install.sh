@@ -24,7 +24,7 @@ fi
 if command -v apt &> /dev/null
 then
   if [ "$EUID" -ne 0 ]; then
-    sudo apt update && apt install golang-go git -y
+    sudo apt update && sudo apt install golang-go git -y
   else
     apt update && apt install sudo golang-go git -y
   fi
