@@ -25,17 +25,37 @@ func Config() {
   // check if github-cli is installed
   check := tools.CommandExists("gh")
   if check == false {
-    // install github-cli
-    installer := tools.GetInstaller()
-    command := func() error {
-      err, _, _ := command.Cmd(installer + "github-cli git openssh", false, false)
-      return err
+    if tools.GetOS() == "arch" {
+      // install github-cli on arch
+      installer := tools.GetInstaller()
+      command := func() error {
+        err, _, _ := command.Cmd(installer + "github-cli git openssh", false, false)
+        return err
+      }
+      action := ui.Action{
+        Name: "Installing github-cli",
+        Cmd: command,
+      }
+      ui.RunAction(action)
+    } else if tools.GetOS() == "debian" {
+      // install github-cli on debian
+      installer := tools.GetInstaller()
+      actions := []ui.Action{}
+      command_string := func() error {
+        err, _, _ := command.Cmd(installer + "git openssh-client", false, false)
+        return err
+      }
+      action := ui.Action{Name: "Installing git and ssh", Cmd: command_string} 
+      actions = append(actions, action)
+
+      command_string = func() error {
+        err, _, _ := command.Cmd("/opt/anyconfig/etc/github-cli.sh", false, false)
+        return err
+      }
+      action = ui.Action{Name: "Installing github-cli", Cmd: command_string} 
+      actions = append(actions, action)
+      ui.RunActions(actions)
     }
-    action := ui.Action{
-      Name: "Installing github-cli",
-      Cmd: command,
-    }
-    ui.RunAction(action)
   }
   // check if github-cli is logged in
   // command := exec.Command("gh", "auth", "status")

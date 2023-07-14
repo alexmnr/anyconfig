@@ -21,7 +21,7 @@ var options []string = []string{
 }
 
 func CreateFile(config config.AnyConfig) {
-  templatePath := "/opt/anyconfig/template/template.yml"
+  templatePath := "/opt/anyconfig/etc/template.yml"
   // check if template exists
   if tools.CheckExist(templatePath) == false {
     out.Error("Could not find template.yml, check if installed correctly!")

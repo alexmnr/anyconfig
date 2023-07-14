@@ -45,12 +45,15 @@ fi
 if ! command -v wget &> /dev/null; then
   dep=false
 fi
+if ! command -v curl &> /dev/null; then
+  dep=false
+fi
 
 if [ "$dep" = "false" ]; then
   # arch install
   if [ "$os" = "arch" ]; then
     if [ "$arc" = "x86_64" ]; then
-      sudo pacman -Sy wget go git --needed --noconfirm
+      sudo pacman -Sy curl wget go git --needed --noconfirm
     else
       echo "ERROR: anyconfig can't automatically install dependencies on your system, you need to do it manually"
       exit 1
@@ -58,7 +61,7 @@ if [ "$dep" = "false" ]; then
   # debian install
   elif [ "$os" = "debian" ]; then
     if [ "$arc" = "x86_64" ]; then
-      sudo apt update && sudo apt install wget git -y
+      sudo apt update && sudo apt install curl wget git -y
       sudo rm -rf /usr/local/go &> /dev/null
       cd /tmp
       wget https://go.dev/dl/go1.20.6.linux-amd64.tar.gz
@@ -69,7 +72,7 @@ if [ "$dep" = "false" ]; then
         export PATH
       fi
     elif [ "$arc" = "aarch64" ]; then
-      sudo apt update && sudo apt install wget git -y
+      sudo apt update && sudo apt install curl wget git -y
       sudo rm -rf /usr/local/go &> /dev/null
       cd /tmp
       wget https://go.dev/dl/go1.20.6.linux-armv6l.tar.gz
