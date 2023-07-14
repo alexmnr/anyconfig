@@ -63,14 +63,22 @@ if [ "$dep" = "false" ]; then
       cd /tmp
       wget https://go.dev/dl/go1.20.6.linux-amd64.tar.gz
       sudo tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
-      sudo echo "PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+      if [ ! -z "$(echo $PATH | grep '/usr/local/go/bin')" ]; then
+        echo 'PATH="\$PATH:/usr/local/go/bin"' | sudo tee -a /etc/profile
+        PATH="$PATH:/usr/local/go/bin"
+        export PATH
+      fi
     elif [ "$arc" = "aarch64" ]; then
       sudo apt update && sudo apt install wget git -y
       sudo rm -rf /usr/local/go &> /dev/null
       cd /tmp
       wget https://go.dev/dl/go1.20.6.linux-armv6l.tar.gz
       sudo tar -C /usr/local -xzf go1.20.6.linux-armv6l.tar.gz
-      sudo echo "PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+      if [ ! -z "$(echo $PATH | grep '/usr/local/go/bin')" ]; then
+        echo 'PATH="\$PATH:/usr/local/go/bin"' | sudo tee -a /etc/profile
+        PATH="$PATH:/usr/local/go/bin"
+        export PATH
+      fi
     else
       echo "ERROR: anyconfig can't automatically install dependencies on your system, you need to do it manually"
       exit 1
@@ -85,3 +93,6 @@ go build .
 
 sudo rm -f /usr/bin/anyconfig &>/dev/null
 sudo ln -s /opt/anyconfig/go/anyconfig /usr/bin
+
+echo ""
+echo "INFO: Installation complete"
