@@ -18,16 +18,18 @@ type ActionDescription struct {
   Args []string
 }
 
-func GetTask(file string) TaskDescription {
+func GetTask(file string) []TaskDescription {
   yamlFile, _ := ioutil.ReadFile(file)
   m := yaml.MapSlice{}
   if err := yaml.Unmarshal(yamlFile, &m); err != nil {
     fmt.Println("Couldn't read yaml file: ", err)
   }
+  configs := []TaskDescription{}
   dependencies := []ActionDescription{}
   install := []ActionDescription{}
   for _, groupvalue := range m {
     if groupvalue.Key == "dependencies" {
+      dependencies = []ActionDescription{}
       switch group := groupvalue.Value.(type) {
       case yaml.MapSlice:
         for _, taskvalue := range group {
@@ -43,6 +45,7 @@ func GetTask(file string) TaskDescription {
         }
       }
     } else if groupvalue.Key == "install" {
+      install = []ActionDescription{}
       switch group := groupvalue.Value.(type) {
       case yaml.MapSlice:
         for _, taskvalue := range group {
@@ -57,12 +60,13 @@ func GetTask(file string) TaskDescription {
           install = append(install, task)
         }
       }
+      config := TaskDescription{}
+      config.Dependencies = dependencies
+      config.Install = install
+      configs = append(configs, config)
     }
   }
-  config := TaskDescription{}
-  config.Dependencies = dependencies
-  config.Install = install
-  return config
+  return configs
 }
 
 

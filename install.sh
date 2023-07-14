@@ -1,5 +1,27 @@
 #!/bin/bash
 
+if command -v pacman &> /dev/null; then
+  os="arch"
+  echo "INFO: Detected arch based system"
+elif command -v apt &> /dev/null; then
+  os="debian"
+  echo "INFO: Detected debian based system"
+else
+  echo "ERROR: OS not supported"
+  exit 1
+fi
+
+if [ ! -z "$(lscpu | grep 'aarch64')" ]; then
+  arc="aarch64"
+  echo "INFO: Detected aarch64 architecture"
+elif [ ! -z "$(lscpu | grep 'x86_64')" ]; then
+  arc="x86_64"
+  echo "INFO: Detected x86_64 architecture"
+else
+  echo "ERROR: architecture not detected"
+  exit 1
+fi
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if [ "$SCRIPT_DIR" = "/opt/anyconfig" ]; then
@@ -12,22 +34,50 @@ else
   cd /opt/anyconfig
 fi
 
-# install arch dependencies
-if command -v pacman &> /dev/null; then
-  if [ "$EUID" -ne 0 ]; then
-    sudo pacman -Sy go git --needed --noconfirm
-  else
-    pacman -Sy sudo go git --needed --noconfirm
-  fi
+# check if dependencies are met
+dep=true
+if ! command -v git &> /dev/null; then
+  dep=false
 fi
-# install debian dependencies
-if command -v apt &> /dev/null
-then
-  if [ "$EUID" -ne 0 ]; then
-    sudo apt update && sudo apt install golang-go git -y
-  else
-    apt update && apt install sudo golang-go git -y
+if ! command -v go &> /dev/null; then
+  dep=false
+fi
+if ! command -v wget &> /dev/null; then
+  dep=false
+fi
+
+if [ "$dep" = "false" ]; then
+  # arch install
+  if [ "$os" = "arch" ]; then
+    if [ "$arc" = "x86_64" ]; then
+      sudo pacman -Sy wget go git --needed --noconfirm
+    else
+      echo "ERROR: anyconfig can't automatically install dependencies on your system, you need to do it manually"
+      exit 1
+    fi
+  # debian install
+  elif [ "$os" = "debian" ]; then
+    if [ "$arc" = "x86_64" ]; then
+      sudo apt update && sudo apt install wget git -y
+      sudo rm -rf /usr/local/go &> /dev/null
+      cd /tmp
+      wget https://go.dev/dl/go1.20.6.linux-amd64.tar.gz
+      sudo tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
+      sudo echo "PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+    elif [ "$arc" = "aarch64" ]; then
+      sudo apt update && sudo apt install wget git -y
+      sudo rm -rf /usr/local/go &> /dev/null
+      cd /tmp
+      wget https://go.dev/dl/go1.20.6.linux-armv6l.tar.gz
+      sudo tar -C /usr/local -xzf go1.20.6.linux-armv6l.tar.gz
+      sudo echo "PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+    else
+      echo "ERROR: anyconfig can't automatically install dependencies on your system, you need to do it manually"
+      exit 1
+    fi
   fi
+else
+  echo "INFO: All Dependencies found"
 fi
 
 cd /opt/anyconfig/go

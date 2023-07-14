@@ -41,15 +41,15 @@ func main() {
   ////// Install
   if input == options[0] {
     // Select Task files to run
-    taskFiles := task.SelectFiles(config.Repo, config)
+    taskFiles := task.SelectFiles(config)
     if len(taskFiles) == 0 {
       out.Error("You must select something!")
       os.Exit(0)
     }
-    // sort them in the right order
-    for i := 0; i < 4; i++ {
-      taskFiles = task.SortFiles(taskFiles, config)
-    }
+    // // sort them in the right order
+    // for i := 0; i < 4; i++ {
+    //   taskFiles = task.SortFiles(taskFiles, config)
+    // }
     // Create actions from selected files
     actions := []ui.Action{}
     for _, file := range taskFiles {

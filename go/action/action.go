@@ -14,7 +14,25 @@ import (
 
 func GetActions(file string, config config.AnyConfig) []ui.Action {
   actions := []ui.Action{}
-  taskDescription := task.GetTask(config.Repo + "/.anyconfig/" + file)
+  taskDescriptions := task.GetTask(config.Repo + "/.anyconfig/" + file)
+  taskDescription := task.TaskDescription{}
+  if len(taskDescriptions) == 0 {
+    out.Error("Error while getting task out of file: " + file)
+    os.Exit(1)
+  } else if len(taskDescriptions) == 1 {
+    taskDescription = taskDescriptions[0]
+  } else {
+    // get the right task
+    for _, test := range taskDescriptions {
+      for _, dep := range test.Dependencies {
+        if dep.Name == "os" {
+          if dep.Args[0] == config.Os {
+            taskDescription = test          
+          }
+        }
+      }
+    }
+  }
   // check dependencies
   check := true
   for _, actionDescription := range taskDescription.Dependencies{
@@ -42,7 +60,7 @@ func GetActions(file string, config config.AnyConfig) []ui.Action {
         }
       }
     } else if actionDescription.Name == "os" {
-      if tools.GetOS() != actionDescription.Args[0] {
+      if config.Os != actionDescription.Args[0] {
           out.Error("Can't run task " + file + " with this operating system")
           os.Exit(1)
           return actions

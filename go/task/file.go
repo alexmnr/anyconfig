@@ -13,26 +13,13 @@ import (
 )
 
 
-func SelectFiles(repo string, config config.AnyConfig) []string {
+func SelectFiles(config config.AnyConfig) []string {
+    repo := config.Repo
     configPath := repo + "/.anyconfig/"
     fileNames := getNamesOfFiles(configPath, true)
     // ged rid if files that dont meet requirements
-    temp := fileNames
-    for n, k := range fileNames {
-      if k == "template" {
-        temp = append(temp[:n], temp[(n+1):]...)
-        continue
-      }
-      description := GetTask(configPath + k + ".yml")
-      for _, actionDescription := range description.Dependencies{
-        if actionDescription.Name == "os" {
-          if actionDescription.Args[0] != config.Os {
-            temp = append(temp[:n], temp[(n+1):]...)
-          }
-        }
-      }
-    }
-    fileNames = temp
+    filter := filterFiles(fileNames, config)
+    fileNames = filter
     fileNames_colored :=  []string{}
     for _, filename := range fileNames {
       _, err := os.Open(configPath + filename)
@@ -75,6 +62,9 @@ func SelectFiles(repo string, config config.AnyConfig) []string {
           }
         }
         fileNames2 = temp
+        // ged rid if files that dont meet requirements
+        filter := filterFiles(fileNames2, config)
+        fileNames2 = filter
         selectedFileNamesSubDir := []string{}
         prompt2 := &survey.MultiSelect{
           Message: "Select Tasks to run in subDir: " + filename,
@@ -102,7 +92,7 @@ func SelectFiles(repo string, config config.AnyConfig) []string {
 func SortFiles(files []string, config config.AnyConfig) []string {
   buffer := []string{}
   for _, k := range files {
-    task := GetTask(config.Repo + "/.anyconfig/" + k)
+    task := GetTask(config.Repo + "/.anyconfig/" + k)[0]
     for _, dep := range task.Dependencies{
       if dep.Name == "task" {
         for _, arg := range dep.Args {
@@ -158,3 +148,34 @@ func getNamesOfFiles(path string, allowDir bool) []string {
   return action_names
 }
 
+func filterFiles(files []string, config config.AnyConfig) []string {
+  configPath := config.Repo + "/.anyconfig/"
+  temp := []string{}
+  for _, k := range files {
+    if k == "template" {
+      continue
+    }
+    keep := false
+    found := false
+    groups := GetTask(configPath + k + ".yml")
+    if len(groups) == 0 {
+      groups = GetTask(configPath + k + "/" + k + ".yml")
+    }
+    for _, group := range groups {
+      for _, actionDescription := range group.Dependencies{
+        if actionDescription.Name == "os" {
+          found = true
+          if actionDescription.Args[0] == config.Os {
+            keep = true
+          }
+        }
+      }
+    }
+    if keep == true {
+      temp = append(temp, k)
+    } else if found == false {
+      temp = append(temp, k)
+    }
+  }
+  return temp
+}
