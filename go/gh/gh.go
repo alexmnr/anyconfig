@@ -49,7 +49,7 @@ func Config() {
       actions = append(actions, action)
 
       command_string = func() error {
-        err, _, _ := command.Cmd("/opt/anyconfig/etc/github-cli.sh", false, false)
+        err, _, _ := command.Cmd("sudo bash /opt/anyconfig/etc/github-cli.sh", false, false)
         return err
       }
       action = ui.Action{Name: "Installing github-cli", Cmd: command_string} 
