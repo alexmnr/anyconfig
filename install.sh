@@ -66,8 +66,9 @@ if [ "$dep" = "false" ]; then
       cd /tmp
       wget https://go.dev/dl/go1.20.6.linux-amd64.tar.gz
       sudo tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
-      if [ ! -z "$(echo $PATH | grep '/usr/local/go/bin')" ]; then
-        echo 'PATH="\$PATH:/usr/local/go/bin"' | sudo tee -a /etc/profile
+      if [ -z "$(echo $PATH | grep '/usr/local/go/bin')" ]; then
+        echo 'export PATH="$PATH:/usr/local/go/bin"' | sudo tee -a /etc/profile
+        echo 'export PATH="$PATH:/usr/local/go/bin"' | sudo tee -a /etc/zsh/zshenv
         PATH="$PATH:/usr/local/go/bin"
         export PATH
       fi
@@ -77,8 +78,9 @@ if [ "$dep" = "false" ]; then
       cd /tmp
       wget https://go.dev/dl/go1.20.6.linux-armv6l.tar.gz
       sudo tar -C /usr/local -xzf go1.20.6.linux-armv6l.tar.gz
-      if [ ! -z "$(echo $PATH | grep '/usr/local/go/bin')" ]; then
-        echo 'PATH="\$PATH:/usr/local/go/bin"' | sudo tee -a /etc/profile
+      if [ -z "$(echo $PATH | grep '/usr/local/go/bin')" ]; then
+        echo 'export PATH="$PATH:/usr/local/go/bin"' | sudo tee -a /etc/profile
+        echo 'export PATH="$PATH:/usr/local/go/bin"' | sudo tee -a /etc/zsh/zshenv
         PATH="$PATH:/usr/local/go/bin"
         export PATH
       fi
