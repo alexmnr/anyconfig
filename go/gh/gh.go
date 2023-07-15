@@ -54,7 +54,7 @@ func Config() {
       }
       action = ui.Action{Name: "Installing github-cli", Cmd: command_string} 
       actions = append(actions, action)
-      ui.RunActions(actions)
+      ui.RunActions(actions, false)
     }
   }
   // check if github-cli is logged in

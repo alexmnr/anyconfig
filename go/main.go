@@ -7,9 +7,9 @@ import (
 	"task"
 	"ui"
 
+	"flag"
 	"fmt"
 	"os"
-	"flag"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -57,7 +57,7 @@ func main() {
     }
     fmt.Println()
     // run actions
-    ui.RunActions(actions)
+    ui.RunActions(actions, config.Debug)
 
   ////// Create
   } else if input == options[1] {

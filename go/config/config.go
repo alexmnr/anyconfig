@@ -19,6 +19,7 @@ type FileStruct struct {
     Installer string `yaml:"installer"`
     UnInstaller string `yaml:"uninstaller"`
     Repo string `yaml:"repo"`
+    Cpu string `yaml:"cpu"`
 }
 
 type AnyConfig struct {
@@ -29,6 +30,7 @@ type AnyConfig struct {
     User string
     HomeDir string
     Debug bool
+    Cpu string
 }
 
 func Init() AnyConfig {
@@ -47,6 +49,7 @@ func Init() AnyConfig {
       User: tools.GetUser(),
       HomeDir: tools.GetHomeDir(),
       Debug: false,
+      Cpu: fileConfig.Cpu,
     }
     return config
   } else {
@@ -78,6 +81,7 @@ func Init() AnyConfig {
       User: tools.GetUser(),
       HomeDir: tools.GetHomeDir(),
       Debug: false,
+      Cpu: fileConfig.Cpu,
     }
     return config
   }
@@ -94,6 +98,7 @@ func createConfig() (FileStruct, error) {
   }
   // get Info
   osType := tools.GetOS()
+  cpu := tools.GetCPU()
   installer := ""
   uninstaller := ""
   if osType == "arch" {
@@ -153,6 +158,7 @@ func createConfig() (FileStruct, error) {
     Installer: installer,
     UnInstaller: uninstaller,
     Repo: repo,
+    Cpu: cpu,
   }
 
   yamlData, err := yaml.Marshal(&anyconfig)

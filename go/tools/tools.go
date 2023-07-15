@@ -1,13 +1,14 @@
 package tools
 
 import (
-  "out"
+	"out"
+	"strings"
 
-  "os"
+	"fmt"
 	"io/ioutil"
-  "os/exec"
-  "os/user"
-  "fmt"
+	"os"
+	"os/exec"
+	"os/user"
 )
 
 func CommandExists(cmd string) bool {
@@ -69,4 +70,20 @@ func GetDirs(location string) []string {
     }
   }
   return dirs
+}
+
+func GetCPU() string {
+  cpu := ""
+  if CommandExists("lscpu") == false {
+    out.Error("Could not detect cpu architecture")
+    os.Exit(1)
+  }
+  cmd := exec.Command("lscpu")
+  out, _ := cmd.Output()
+  if strings.Contains(string(out), "x86_64") == true {
+    cpu = "x86_64"
+  } else if strings.Contains(string(out), "aarch64") == true {
+    cpu = "aarch64"
+  }
+  return cpu
 }

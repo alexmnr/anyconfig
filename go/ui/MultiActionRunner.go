@@ -1,13 +1,14 @@
 package ui
 
 import (
-  "out"
-  "tools"
-  "command"
+	"command"
+	"out"
+	"tools"
 
 	"fmt"
 	"os"
 	"strings"
+
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -35,9 +36,10 @@ type multi_action_model struct {
 	spinner  spinner.Model
 	progress progress.Model
 	done     bool
+  debug    bool
 }
 
-func new_multi_model(actions []Action) multi_action_model {
+func new_multi_model(actions []Action, debug bool) multi_action_model {
 	p := progress.New(
 		progress.WithScaledGradient("#6CD0D4", "#C45CFA"),
 		progress.WithWidth(90),
@@ -51,6 +53,7 @@ func new_multi_model(actions []Action) multi_action_model {
     index: 0,
 		spinner:  s,
 		progress: p,
+		debug: debug,
 	}
 }
 
@@ -122,6 +125,10 @@ func (m multi_action_model) View() string {
 	cellsRemaining := max(0, m.width-lipgloss.Width(prog+pkgCount))
 	gap := strings.Repeat(" ", cellsRemaining / 2)
 
+  if m.debug == true {
+    return ""
+  }
+
 	return spin + info + "\n" + gap + prog + pkgCount + "\n"
 }
 
@@ -132,7 +139,7 @@ func max(a, b int) int {
 	return b
 }
 
-func RunActions(actions []Action) {
+func RunActions(actions []Action, debug bool) {
   if len(actions) == 0 {
     out.Info("nothing to do")
     return
@@ -142,7 +149,7 @@ func RunActions(actions []Action) {
     command.Cmd("sudo true", false, true)
   }
   // create model
-  model := new_multi_model(actions)
+  model := new_multi_model(actions, debug)
   p := tea.NewProgram(model)
   // run actions
   go func(){
