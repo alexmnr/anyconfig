@@ -14,6 +14,9 @@ fi
 if [ ! -z "$(lscpu | grep 'aarch64')" ]; then
   arc="aarch64"
   echo "INFO: Detected aarch64 architecture"
+elif [ ! -z "$(lscpu | grep 'armv7l')" ]; then
+  arc="aarch64"
+  echo "INFO: Detected aarch64 architecture"
 elif [ ! -z "$(lscpu | grep 'x86_64')" ]; then
   arc="x86_64"
   echo "INFO: Detected x86_64 architecture"
