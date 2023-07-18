@@ -18,6 +18,7 @@ import (
 type Action struct{
   Name string
   Cmd func() error
+  Interactive bool
 }
 
 type installedPkgMsg string
@@ -126,6 +127,9 @@ func (m multi_action_model) View() string {
 	gap := strings.Repeat(" ", cellsRemaining / 2)
 
   if m.debug == true {
+    return ""
+  }
+  if m.actions[m.index].Interactive == true {
     return ""
   }
 

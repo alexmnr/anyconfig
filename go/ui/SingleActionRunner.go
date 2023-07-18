@@ -17,15 +17,17 @@ type single_action_model struct {
 	height   int
 	spinner  spinner.Model
 	done     bool
+  debug    bool
 }
 
-func new_single_model(action Action) single_action_model {
+func new_single_model(action Action, debug bool) single_action_model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("63"))
 	return single_action_model{
 	  action: action,
 		spinner:  s,
+		debug: debug,
 	}
 }
 
@@ -64,16 +66,23 @@ func (m single_action_model) View() string {
 
 	info := lipgloss.NewStyle().MaxWidth(cellsAvail).Render(m.action.Name)
 
+  if m.debug == true {
+    return ""
+  }
+  if m.action.Interactive == true {
+    return ""
+  }
+
 	return spin + info 
 }
 
-func RunAction(action Action) {
+func RunAction(action Action, debug bool) {
   // get sudo rights
   if tools.GetUser() != "root"{
     command.Cmd("sudo true", false, true)
   }
   // create model
-  model := new_single_model(action)
+  model := new_single_model(action, debug)
   p := tea.NewProgram(model)
   // run actions
   go func(){

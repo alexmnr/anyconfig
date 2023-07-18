@@ -3,9 +3,12 @@ package main
 import (
 	"action"
 	"config"
+	"gh"
 	"out"
 	"task"
+	"tools"
 	"ui"
+  // "command"
 
 	"flag"
 	"fmt"
@@ -25,13 +28,33 @@ func main() {
   if *debugFlag == true {
     config.Debug = true
   }
+  // check if update is possible
+  anyconfig_update := false
+  repo_update := false
+  if tools.CheckExist("/tmp/anyconfig_update") == true {
+    anyconfig_update = true
+  } else {
+    go gh.CheckAnyconfigUpdate()
+  }
+  // check if repo has updates
+  if tools.CheckExist("/tmp/repo_update") == true {
+    repo_update = true
+  } else {
+    go gh.CheckRepoUpdate(config.Repo)
+  }
   // check what to do
   input := ""
   options := []string{
     out.Style(3, false, "Install") + " existing tasks in repo", 
     out.Style(3, false, "Create") + " new task in repo", 
-    out.Style(0, true, "Exit"), 
   }
+  if anyconfig_update == true {
+    options = append(options, out.Style(2, false, "Update") + " anyconfig")
+  }
+  if repo_update == true {
+    options = append(options, out.Style(2, false, "Update") + " Repository")
+  }
+  options = append(options, out.Style(0, true, "Exit"))
   prompt := &survey.Select{
     Message: "What do you want to do? ",
     Options: options,
@@ -62,6 +85,12 @@ func main() {
   ////// Create
   } else if input == options[1] {
     task.CreateFile(config)
+  } else if input == out.Style(2, false, "Update") + " anyconfig" {
+    fmt.Println()
+    gh.UpdateAnyconfig()
+  } else if input == out.Style(2, false, "Update") + " Repository" {
+    fmt.Println()
+    gh.UpdateRepo(config.Repo)
   } else {
     fmt.Println("Bye!")
     os.Exit(0)

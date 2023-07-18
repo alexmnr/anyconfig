@@ -1,17 +1,17 @@
 package gh
 
 import (
+	"command"
 	"out"
 	"tools"
-  "ui"
-  "command"
+	"ui"
 
+	"encoding/json"
+	"os"
 	"os/exec"
-  "os"
-	"github.com/AlecAivazis/survey/v2"
 	"strings"
-  "encoding/json"
 
+	"github.com/AlecAivazis/survey/v2"
 )
 
 type FileStruct struct {
@@ -36,7 +36,7 @@ func Config() {
         Name: "Installing github-cli",
         Cmd: command,
       }
-      ui.RunAction(action)
+      ui.RunAction(action, false)
     } else if tools.GetOS() == "debian" {
       // install github-cli on debian
       installer := tools.GetInstaller()
@@ -109,3 +109,119 @@ func getRepos() []string {
   return repos
 }
 
+func CheckAnyconfigUpdate() {
+  if tools.CheckExist("/tmp/anyconfig_update") == true {
+    return
+  }
+  update_needed := false
+  // fetch remote
+  command_string := "git -C /opt/anyconfig remote update"
+  cmd := exec.Command(command_string)
+  cmd.Run()
+
+  // check if remote is ahead
+  command_string = "cd /opt/anyconfig && git status"
+  err, output, _ := command.Cmd(command_string, false, false)
+  if err == nil {
+    if strings.Contains(output, "behind") == true {
+      update_needed = true
+    }
+  }
+
+  // create file to signal that a update is available
+  if update_needed == true {
+    command_string = "touch /tmp/anyconfig_update" 
+    err, _, _ := command.Cmd(command_string, false, false)
+    if err != nil {
+      out.Error("Could not create file")
+      return
+    }
+  }
+}
+
+func CheckRepoUpdate(repo string) {
+  if tools.CheckExist("/tmp/repo_update") == true {
+    return
+  }
+  update_needed := false
+  // fetch remote
+  command_string := "git -C " + repo + " remote update"
+  cmd := exec.Command(command_string)
+  cmd.Run()
+
+  // check if remote is ahead
+  command_string = "cd " + repo + " && git status"
+  err, output, _ := command.Cmd(command_string, false, false)
+  if err == nil {
+    if strings.Contains(output, "behind") == true {
+      update_needed = true
+    }
+  }
+
+  // create file to signal that a update is available
+  if update_needed == true {
+    command_string = "touch /tmp/repo_update" 
+    err, _, _ := command.Cmd(command_string, false, false)
+    if err != nil {
+      out.Error("Could not create file")
+      return
+    }
+  }
+}
+
+func UpdateRepo(repo string) {
+  command_string := "cd " + repo + " && git pull"
+  exe := func() error {
+    err, output, error := command.Cmd(command_string, false, false)
+    if err != nil {
+      out.CommandError(command_string, err, output, error)
+      os.Exit(1)
+    }
+    return err
+  }
+  action := ui.Action{
+    Name: "Pulling latest commits",
+    Cmd: exe,
+  }
+  ui.RunAction(action, false)
+
+  command_string = "rm -f /tmp/repo_update"
+  command.Cmd(command_string, false, false)
+}
+
+func UpdateAnyconfig() {
+  // Pulling repo
+  command_string := "cd /opt/anyconfig && git pull"
+  exe := func() error {
+    err, output, error := command.Cmd(command_string, false, false)
+    if err != nil {
+      out.CommandError(command_string, err, output, error)
+      os.Exit(1)
+    }
+    return err
+  }
+  action := ui.Action{
+    Name: "Pulling latest commits",
+    Cmd: exe,
+  }
+  ui.RunAction(action, false)
+
+  // Building anyconfig
+  command_string = "cd /opt/anyconfig/go && go build ."
+  exe = func() error {
+    err, output, error := command.Cmd(command_string, false, false)
+    if err != nil {
+      out.CommandError(command_string, err, output, error)
+      os.Exit(1)
+    }
+    return err
+  }
+  action = ui.Action{
+    Name: "Building anyconfig",
+    Cmd: exe,
+  }
+  ui.RunAction(action, false)
+
+  command_string = "rm -f /tmp/anyconfig_update"
+  command.Cmd(command_string, false, false)
+}
