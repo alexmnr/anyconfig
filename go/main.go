@@ -33,15 +33,11 @@ func main() {
   repo_update := false
   if tools.CheckExist("/tmp/anyconfig_update") == true {
     anyconfig_update = true
-  } else {
-    go gh.CheckAnyconfigUpdate()
-  }
+  } 
   // check if repo has updates
   if tools.CheckExist("/tmp/repo_update") == true {
     repo_update = true
-  } else {
-    go gh.CheckRepoUpdate(config.Repo)
-  }
+  } 
   // check what to do
   input := ""
   options := []string{
