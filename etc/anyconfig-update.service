@@ -1,0 +1,11 @@
+[Unit]
+Description=anyconfig update checker
+After=network-online.target
+
+[Service]
+ExecStart=/opt/anyconfig/etc/anyconfig-update-checker.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

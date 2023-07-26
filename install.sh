@@ -102,5 +102,11 @@ go build .
 sudo rm -f /usr/bin/anyconfig &>/dev/null
 sudo ln -s /opt/anyconfig/go/anyconfig /usr/bin
 
+# install update service
+sudo ln -s /opt/anyconfig/etc/anyconfig-update.service /usr/lib/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable anyconfig-update
+systemctl --user start anyconfig-update
+
 echo ""
 echo "INFO: Installation complete"
