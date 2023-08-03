@@ -2,7 +2,7 @@ package task
 
 import (
 	"fmt"
-	"io/ioutil"
+  "os"
 	"gopkg.in/yaml.v2"
 )
 
@@ -19,7 +19,7 @@ type ActionDescription struct {
 }
 
 func GetTask(file string) []TaskDescription {
-  yamlFile, _ := ioutil.ReadFile(file)
+  yamlFile, _ := os.ReadFile(file)
   m := yaml.MapSlice{}
   if err := yaml.Unmarshal(yamlFile, &m); err != nil {
     fmt.Println("Couldn't read yaml file: ", err)

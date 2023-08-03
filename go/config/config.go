@@ -7,7 +7,6 @@ import (
 	"tools"
 	"ui"
 
-	"io/ioutil"
 	"fmt"
 	"os"
 	"github.com/AlecAivazis/survey/v2"
@@ -36,7 +35,7 @@ type AnyConfig struct {
 func Init() AnyConfig {
   // load config if exists
   if tools.CheckExist("/etc/anyconfig/anyconfig.yml") == true {
-    yamlFile, _ := ioutil.ReadFile("/etc/anyconfig/anyconfig.yml")
+    yamlFile, _ := os.ReadFile("/etc/anyconfig/anyconfig.yml")
     fileConfig := FileStruct{}
     if err := yaml.Unmarshal(yamlFile, &fileConfig); err != nil {
       fmt.Printf(out.ErrorString("Error while reading config: ") + "%v \n", err)
@@ -167,7 +166,7 @@ func createConfig() (FileStruct, error) {
     os.Exit(0)
   }
   fileName := "/tmp/anyconfig.yml"
-  err = ioutil.WriteFile(fileName, yamlData, 0644)
+  err = os.WriteFile(fileName, yamlData, 0644)
   if err != nil {
     fmt.Printf(out.ErrorString("Error while writing Config: ") + "%v \n", err)
     os.Exit(1)

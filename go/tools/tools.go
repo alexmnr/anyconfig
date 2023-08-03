@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/user"
@@ -63,7 +62,7 @@ func GetHomeDir() string {
 func GetDirs(location string) []string {
   var dirs []string
 
-  items, _ := ioutil.ReadDir(location)
+  items, _ := os.ReadDir(location)
   for _, item := range items {
     if item.IsDir() {
       dirs = append(dirs, item.Name())

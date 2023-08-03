@@ -5,7 +5,6 @@ import (
 	"out"
 	"tools"
 
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -126,7 +125,7 @@ func SortFiles(files []string, config config.AnyConfig) []string {
 }
 
 func getNamesOfFiles(path string, allowDir bool) []string {
-  items, _ := ioutil.ReadDir(path)
+  items, _ := os.ReadDir(path)
   var action_names []string
   for _, item := range items {
     if item.IsDir() {
