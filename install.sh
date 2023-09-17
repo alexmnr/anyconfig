@@ -40,8 +40,8 @@ if [ "$go" = "false" ]; then
     arc="aarch64"
     echo "INFO: Detected aarch64 architecture"
   elif [ ! -z "$(lscpu | grep 'armv7l')" ]; then
-    arc="aarch64"
-    echo "INFO: Detected aarch64 architecture"
+    arc="armv7l"
+    echo "INFO: Detected armv7l architecture"
   elif [ ! -z "$(lscpu | grep 'x86_64')" ]; then
     arc="x86_64"
     echo "INFO: Detected x86_64 architecture"
@@ -52,7 +52,7 @@ if [ "$go" = "false" ]; then
 
   # install go from source
   if [ "$arc" = "x86_64" ]; then
-    sudo rm -rf /usr/local/go &> /dev/null
+    sudo rm -rf /usr/local/go /usr/bin/go /usr/bin/gofmt &> /dev/null
     cd /tmp
     link="https://go.dev/dl/go$version.linux-amd64.tar.gz"
     wget $link
@@ -61,12 +61,22 @@ if [ "$go" = "false" ]; then
     sudo rm -f /usr/bin/gofmt
     sudo ln -s /usr/local/go/bin/go /usr/bin
     sudo ln -s /usr/local/go/bin/gofmt /usr/bin
-  elif [ "$arc" = "aarch64" ]; then
-    sudo rm -rf /usr/local/go &> /dev/null
+  elif [ "$arc" = "armv7l" ]; then
+    sudo rm -rf /usr/local/go /usr/bin/go /usr/bin/gofmt &> /dev/null
     cd /tmp
     link="https://go.dev/dl/go$version.linux-armv6l.tar.gz"
     wget $link
     sudo tar -C /usr/local -xzf go$version.linux-armv6l.tar.gz
+    sudo rm -f /usr/bin/go
+    sudo rm -f /usr/bin/gofmt
+    sudo ln -s /usr/local/go/bin/go /usr/bin
+    sudo ln -s /usr/local/go/bin/gofmt /usr/bin
+  elif [ "$arc" = "aarch64" ]; then
+    sudo rm -rf /usr/local/go /usr/bin/go /usr/bin/gofmt &> /dev/null
+    cd /tmp
+    link="https://go.dev/dl/go$version.linux-arm64.tar.gz"
+    wget $link
+    sudo tar -C /usr/local -xzf go$version.linux-arm64.tar.gz
     sudo rm -f /usr/bin/go
     sudo rm -f /usr/bin/gofmt
     sudo ln -s /usr/local/go/bin/go /usr/bin
