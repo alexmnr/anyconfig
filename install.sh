@@ -112,6 +112,7 @@ sudo rm -f /usr/bin/anyconfig &>/dev/null
 sudo ln -s /opt/anyconfig/go/anyconfig /usr/bin
 
 echo "INFO: Linking anyconfig-update service..."
+sudo rm -f /usr/lib/systemd/user/anyconfig-update.service
 sudo ln -s /opt/anyconfig/etc/anyconfig-update.service /usr/lib/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable anyconfig-update
