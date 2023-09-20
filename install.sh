@@ -1,5 +1,6 @@
 #!/bin/bash
 # check if dependencies are met
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 version="1.21.1"
 dep=true
 missing=""
@@ -92,7 +93,6 @@ echo "INFO: All dependencies were met!"
 
 # move current dir to /opt/anyconfig
 echo "INFO: Installing anyconfig in /opt/anyconfig..."
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 if [ "$SCRIPT_DIR" = "/opt/anyconfig" ]; then
   sudo chown $USER:$USER /opt/anyconfig -R
   cd /opt/anyconfig
