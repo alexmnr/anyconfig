@@ -10,23 +10,43 @@ import (
 	"ui"
   // "command"
 
-	"flag"
 	"fmt"
 	"os"
 
 	"github.com/AlecAivazis/survey/v2"
 )
 
-var debugFlag = flag.Bool("debug", false, "Activate Debugging")
 
 func main() {
   // config
   config := config.Init()
   config.Debug = false
-  // flags and arguments
-	flag.Parse()
-  if *debugFlag == true {
-    config.Debug = true
+  directInstall := false
+  var files []string
+  //////// Arguments ///////
+  args := os.Args
+  for _, arg := range args {
+    if arg == "-d" {
+      config.Debug = true
+    } else if arg == "-i" {
+      directInstall = true
+    } else if directInstall == true {
+      files = append(files, arg)
+    }
+  }
+  // direct install
+  if len(files) > 0 {
+    // sort them in the right order
+    taskFiles := task.SortFiles(files, config)
+    // Create actions from selected files
+    actions := []ui.Action{}
+    for _, file := range taskFiles {
+      actions = append(actions, action.GetActions(file, config)...)
+    }
+    fmt.Println()
+    // run actions
+    ui.RunActions(actions, config.Debug)
+    os.Exit(0)
   }
   // check if update is possible
   anyconfig_update := false
