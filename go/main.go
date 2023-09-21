@@ -22,12 +22,15 @@ func main() {
   config := config.Init()
   config.Debug = false
   directInstall := false
+  silent := false
   var files []string
   //////// Arguments ///////
   args := os.Args
   for _, arg := range args {
     if arg == "-d" {
       config.Debug = true
+    } else if arg == "-s" {
+      silent = true
     } else if arg == "-i" {
       directInstall = true
     } else if directInstall == true {
@@ -45,7 +48,14 @@ func main() {
     }
     fmt.Println()
     // run actions
-    ui.RunActions(actions, config.Debug)
+    if silent == true {
+      for _, action := range actions {
+        out.Info("Running action with name: " + action.Name)
+        action.Cmd()
+      }
+    } else {
+      ui.RunActions(actions, config.Debug)
+    }
     os.Exit(0)
   }
   // check if update is possible
