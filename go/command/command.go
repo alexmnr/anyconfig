@@ -119,9 +119,16 @@ func Mkdir(input string, backup bool) error {
 
 func Backup(input string) error {
   if tools.CheckExist(input) == false {
+    // remove file if not already gone
+		removeFile := strings.TrimSuffix(input, "/")
+    string := "sudo rm -rf " + removeFile
+    err, output, error := Cmd(string, false, false)
+    if err != nil {
+      out.CommandError(string, err, output, error)
+    }
     return nil
   }
-  oldDir := tools.GetHomeDir() + "/.old"
+  oldDir := tools.GetHomeDir() + "/.old/"
   // create .old Dir
   if tools.CheckExist(oldDir)  == false {
     err := Mkdir(oldDir, false) 
@@ -131,6 +138,8 @@ func Backup(input string) error {
     }
   }
   // check if backuped file already exists
+	strippedInput := strings.TrimSuffix(input, "/")
+	strippedInput = strings.TrimPrefix(strippedInput, "/")
   split := strings.Split(input, "/")
   filename := split[len(split) - 1]
   if tools.CheckExist(oldDir + "/" + filename)  == true {
